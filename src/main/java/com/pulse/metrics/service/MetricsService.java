@@ -71,4 +71,11 @@ public class MetricsService {
         int index = (int) Math.ceil(0.95 * times.size()) - 1;
         return times.get(Math.max(0, index));
     }
+
+    public List<MetricsResponse> getMetricsByProject(String projectId) {
+        List<MonitoredService> services = serviceRepository.findByProjectId(projectId);
+        return services.stream()
+                .map(s -> getMetrics(s.getId()))
+                .toList();
+    }
 }

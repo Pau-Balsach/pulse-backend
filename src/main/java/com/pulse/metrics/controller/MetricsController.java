@@ -6,15 +6,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/services/{serviceId}/metrics")
 @RequiredArgsConstructor
 public class MetricsController {
 
     private final MetricsService metricsService;
 
-    @GetMapping
+    @GetMapping("/api/services/{serviceId}/metrics")
     public ResponseEntity<MetricsResponse> getMetrics(@PathVariable String serviceId) {
         return ResponseEntity.ok(metricsService.getMetrics(serviceId));
+    }
+
+    @GetMapping("/api/projects/{projectId}/metrics")
+    public ResponseEntity<List<MetricsResponse>> getMetricsByProject(@PathVariable String projectId) {
+        return ResponseEntity.ok(metricsService.getMetricsByProject(projectId));
     }
 }
