@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pulse-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-0-eu-west-1.pooler.supabase.com:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres.mxmgcqbatbeerrdwnizy
+      SPRING_DATASOURCE_PASSWORD: ppausslse76
+      JWT_SECRET: pulseSecretKey2024XyZ987654321AbCdEfGhIjKlMnOpQrStUvWxYz
+      JWT_EXPIRATION: 86400000
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../pulse-frontend
+      dockerfile: Dockerfile
+    container_name: pulse-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
