@@ -1,117 +1,152 @@
 # Pulse — Backend
 
-> Monitoring platform backend built with Spring Boot 3.5. Tracks uptime, latency, SSL certificates, and sends email alerts when incidents are detected.
+![Java](https://img.shields.io/badge/Java-21-orange) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-green) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-blue) ![Docker](https://img.shields.io/badge/Docker-ready-blue)
 
-## Tech Stack
+**API REST:** https://pulse-backend-kurk.onrender.com  
+**Swagger UI:** https://pulse-backend-kurk.onrender.com/swagger-ui/index.html  
+**Frontend:** https://github.com/Pau-Balsach/pulse-frontend
 
-- **Java 21** + **Spring Boot 3.5**
-- **Spring Security** with JWT authentication
-- **Spring Data JPA** + **PostgreSQL** (Supabase)
-- **WebSockets** (STOMP) for real-time updates
-- **JavaMailSender** for email notifications
-- **Springdoc OpenAPI** for API documentation
-- **Docker** ready
+---
 
-## Features
+## ¿Qué es Pulse?
 
-- JWT authentication (register, login)
-- Project and monitored service management (CRUD)
-- Automatic HTTP checks every 60 seconds
-- Automatic incident detection (OPEN / RESOLVED)
-- SSL certificate expiry tracking
-- Real-time dashboard updates via WebSocket
-- Email alerts on incident open
-- Public status page endpoint (no auth required)
-- Full API documentation via Swagger UI
+Pulse es una plataforma de observabilidad SaaS similar a UptimeRobot o BetterStack. Permite monitorizar servicios web en tiempo real, detectar caídas automáticamente, revisar el historial de incidencias y consultar el estado de todos los servicios desde una página pública sin necesidad de autenticación.
 
-## Getting Started
+Este repositorio contiene el **backend**, encargado de:
 
-### Prerequisites
+- Autenticar usuarios mediante JWT
+- Gestionar proyectos y servicios monitorizados
+- Lanzar comprobaciones HTTP automáticas cada 60 segundos
+- Detectar y resolver incidencias automáticamente
+- Comprobar la validez y caducidad de certificados SSL
+- Enviar alertas por email cuando se detecta una incidencia
+- Emitir actualizaciones en tiempo real al dashboard mediante WebSockets
+- Exponer una página de estado pública por proyecto
 
-- Java 21
-- Maven 3.9+
-- PostgreSQL database (or Supabase)
+---
 
-### Configuration
+## Tecnologías
 
-Copy the example properties file and fill in your values:
+| Tecnología | Uso |
+|---|---|
+| Java 21 | Lenguaje principal |
+| Spring Boot 3.5 | Framework backend |
+| Spring Security + JWT | Autenticación stateless |
+| Spring Data JPA | Acceso a base de datos |
+| PostgreSQL (Supabase) | Base de datos en la nube |
+| WebSockets (STOMP) | Actualizaciones en tiempo real |
+| JavaMailSender (SMTP) | Notificaciones por email |
+| Springdoc OpenAPI | Documentación automática de la API |
+| Docker | Containerización |
+
+---
+
+## Estructura del código
+
+```
+src/main/java/com/pulse/
+├── auth/               # Registro, login y filtros JWT
+├── config/             # SecurityConfig, CORS, UserDetailsService
+├── incident/           # Detección y gestión de incidencias
+├── metrics/            # Uptime %, latencia media, p95, total checks
+├── monitor/            # HttpChecker y MonitorScheduler (@Scheduled)
+├── notification/       # Envío de emails con JavaMailSender
+├── project/            # CRUD de proyectos
+├── publicstatus/       # Endpoint público /public/status/{projectId}
+├── service/            # CRUD de servicios monitorizados
+├── ssl/                # SslChecker, entidad y repositorio
+└── websocket/          # WebSocketConfig y MonitorWebSocketPublisher
+```
+
+---
+
+## Base de datos
+
+| Tabla | Descripción |
+|---|---|
+| `users` | Usuarios registrados |
+| `projects` | Proyectos de monitorización |
+| `monitored_services` | Servicios configurados para monitorizar |
+| `monitor_checks` | Resultados de cada comprobación HTTP |
+| `incidents` | Incidencias detectadas (OPEN / RESOLVED) |
+| `ssl_checks` | Resultados de comprobaciones de certificado SSL |
+
+---
+
+## Endpoints principales
+
+| Método | Ruta | Auth | Descripción |
+|---|---|---|---|
+| POST | `/api/auth/register` | No | Registrar usuario |
+| POST | `/api/auth/login` | No | Login, devuelve JWT |
+| GET | `/api/projects` | Sí | Listar proyectos del usuario |
+| POST | `/api/projects` | Sí | Crear proyecto |
+| DELETE | `/api/projects/{id}` | Sí | Eliminar proyecto |
+| GET | `/api/projects/{id}/services` | Sí | Listar servicios de un proyecto |
+| POST | `/api/projects/{id}/services` | Sí | Crear servicio |
+| DELETE | `/api/services/{id}` | Sí | Eliminar servicio |
+| GET | `/api/services/{id}/metrics` | Sí | Métricas del servicio (uptime, latencia, p95) |
+| GET | `/api/services/{id}/incidents` | Sí | Historial de incidencias |
+| GET | `/public/status/{projectId}` | No | Página de estado pública del proyecto |
+
+Documentación completa disponible en [Swagger UI](https://pulse-backend-kurk.onrender.com/swagger-ui/index.html).
+
+---
+
+## Configuración
+
+Copia el archivo de ejemplo y rellena los valores:
 
 ```bash
 cp src/main/resources/application.properties.example src/main/resources/application.properties
 ```
 
-```properties
-spring.datasource.url=jdbc:postgresql://HOST:5432/postgres
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+### application.properties.example
 
-jwt.secret=YOUR_JWT_SECRET
+```properties
+# Base de datos
+spring.datasource.url=jdbc:postgresql://HOST:5432/postgres
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Puerto
+server.port=8080
+
+# JWT
+jwt.secret=YOUR_JWT_SECRET_KEY
 jwt.expiration=86400000
 
+# Mail (Gmail con App Password)
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
 spring.mail.username=YOUR_EMAIL@gmail.com
 spring.mail.password=YOUR_APP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
 
+# Notificaciones
 notification.email.to=YOUR_EMAIL@gmail.com
 ```
 
-### Run locally
+---
+
+## Ejecución local
 
 ```bash
+# Con Maven
 ./mvnw spring-boot:run
-```
 
-### Run with Docker
-
-```bash
+# Con Docker (junto al frontend)
 docker-compose up --build
 ```
 
-## API Endpoints
-
-Full documentation available at `http://localhost:8080/swagger-ui/index.html` once the server is running.
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/auth/register` | No | Register user |
-| POST | `/api/auth/login` | No | Login, returns JWT |
-| GET | `/api/projects` | Yes | List projects |
-| POST | `/api/projects` | Yes | Create project |
-| GET | `/api/projects/{id}/services` | Yes | List services |
-| POST | `/api/projects/{id}/services` | Yes | Create service |
-| GET | `/api/services/{id}/metrics` | Yes | Get service metrics |
-| GET | `/api/services/{id}/incidents` | Yes | Get incidents |
-| GET | `/public/status/{projectId}` | No | Public status page |
-
-## Project Structure
-
-```
-src/main/java/com/pulse/
-├── auth/          # JWT authentication
-├── config/        # Security, CORS config
-├── incident/      # Incident detection and management
-├── metrics/       # Uptime, latency, p95 metrics
-├── monitor/       # HTTP checker and scheduler
-├── notification/  # Email alerts
-├── project/       # Project CRUD
-├── publicstatus/  # Public status endpoint
-├── service/       # Monitored service CRUD
-├── ssl/           # SSL certificate checker
-└── websocket/     # WebSocket config and publisher
-```
-
-## Database Tables
-
-| Table | Description |
-|-------|-------------|
-| `users` | Registered users |
-| `projects` | Monitoring projects |
-| `monitored_services` | Services being monitored |
-| `monitor_checks` | HTTP check results |
-| `incidents` | Detected incidents |
-| `ssl_checks` | SSL certificate checks |
+---
 
 ## Frontend
 
-The frontend repository is available at [pulse-frontend](https://github.com/Pau-Balsach/pulse-frontend).
+El repositorio del frontend está disponible en [pulse-frontend](https://github.com/Pau-Balsach/pulse-frontend).
