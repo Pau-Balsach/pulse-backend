@@ -30,7 +30,7 @@ public class MonitoredServiceService {
     }
 
     public List<ServiceResponse> getByProject(String projectId) {
-        return repository.findByProjectId(projectId)
+        return repository.findByProjectIdOrderByNameAsc(projectId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
