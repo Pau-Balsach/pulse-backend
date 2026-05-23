@@ -26,7 +26,7 @@ public class PublicStatusService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        List<MonitoredService> services = serviceRepository.findByProjectId(projectId);
+        List<MonitoredService> services = serviceRepository.findByProjectIdOrderByNameAsc(projectId);
 
         List<PublicServiceStatus> statusList = services.stream().map(service -> {
             List<MonitorCheck> checks = checkRepository

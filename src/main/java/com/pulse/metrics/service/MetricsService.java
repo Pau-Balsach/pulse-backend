@@ -73,11 +73,9 @@ public class MetricsService {
     }
 
     public List<MetricsResponse> getMetricsByProject(String projectId) {
-        List<MonitoredService> services = serviceRepository.findByProjectId(projectId);
+        List<MonitoredService> services = serviceRepository.findByProjectIdOrderByNameAsc(projectId);
         return services.stream()
                 .map(s -> getMetrics(s.getId()))
                 .toList();
     }
-
-
 }

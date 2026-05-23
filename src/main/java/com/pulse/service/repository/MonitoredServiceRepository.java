@@ -7,4 +7,5 @@ import java.util.List;
 public interface MonitoredServiceRepository extends JpaRepository<MonitoredService, String> {
     List<MonitoredService> findByProjectId(String projectId);
     List<MonitoredService> findByActiveTrue();
+    List<MonitoredService> findByProjectIdOrderByNameAsc(String projectId);
 }
