@@ -31,7 +31,7 @@ public class PublicStatusService {
 
         List<PublicServiceStatus> statusList = services.stream().map(service -> {
             List<MonitorCheck> checks = checkRepository
-                    .findTop20ByServiceIdOrderByCheckedAtDesc(service.getId());
+                    .findByServiceIdOrderByCheckedAtDesc(service.getId());
 
             long total = checks.size();
             long down = checks.stream().filter(c -> c.getStatus().equals("DOWN")).count();
