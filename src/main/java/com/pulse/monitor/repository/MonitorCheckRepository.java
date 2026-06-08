@@ -8,4 +8,5 @@ public interface MonitorCheckRepository extends JpaRepository<MonitorCheck, Stri
     List<MonitorCheck> findTop20ByServiceIdOrderByCheckedAtDesc(String serviceId);
     List<MonitorCheck> findTop50ByServiceIdOrderByCheckedAtAsc(String serviceId);
     List<MonitorCheck> findTop500ByServiceIdOrderByCheckedAtDesc(String serviceId);
+    long countByServiceId(String serviceId);
 }

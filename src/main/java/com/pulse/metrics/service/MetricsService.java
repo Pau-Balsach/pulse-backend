@@ -27,7 +27,8 @@ public class MetricsService {
         List<MonitorCheck> checks = checkRepository
                 .findTop500ByServiceIdOrderByCheckedAtDesc(serviceId);
 
-        long totalChecks = checks.size();
+        long totalChecks = checkRepository.countByServiceId(serviceId);
+
         long totalDown = checks.stream()
                 .filter(c -> c.getStatus().equals("DOWN"))
                 .count();
