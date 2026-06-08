@@ -25,7 +25,7 @@ public class MetricsService {
                 .orElseThrow(() -> new RuntimeException("Service not found"));
 
         List<MonitorCheck> checks = checkRepository
-                .findByServiceIdOrderByCheckedAtDesc(serviceId);
+                .findTop500ByServiceIdOrderByCheckedAtDesc(serviceId);
 
         long totalChecks = checks.size();
         long totalDown = checks.stream()
