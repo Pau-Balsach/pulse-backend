@@ -21,11 +21,16 @@ public class HttpChecker {
         long start = System.currentTimeMillis();
 
         try {
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest.Builder builder = HttpRequest.newBuilder()
                     .uri(URI.create(service.getUrl()))
                     .method(service.getMethod(), HttpRequest.BodyPublishers.noBody())
-                    .timeout(Duration.ofMillis(service.getTimeoutMs()))
-                    .build();
+                    .timeout(Duration.ofMillis(service.getTimeoutMs()));
+
+            if (service.getApiKeyHeader() != null && service.getApiKeyValue() != null) {
+                builder.header(service.getApiKeyHeader(), service.getApiKeyValue());
+            }
+
+            HttpRequest request = builder.build();
 
             HttpResponse<String> response = httpClient.send(
                     request, HttpResponse.BodyHandlers.ofString());

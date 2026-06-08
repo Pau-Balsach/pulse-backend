@@ -26,6 +26,11 @@ public class MonitoredService {
     @Column(nullable = false)
     private String url;
 
+    @Column(nullable = true)
+    private String apiKeyHeader;
+    @Column(nullable = true)
+    private String apiKeyValue;
+
     @Column(nullable = false)
     private String method;
 

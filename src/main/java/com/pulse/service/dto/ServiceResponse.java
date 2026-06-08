@@ -17,4 +17,6 @@ public class ServiceResponse {
     private Integer checkIntervalSeconds;
     private Boolean active;
     private LocalDateTime createdAt;
+    private String apiKeyHeader;
+    private String apiKeyValue;
 }

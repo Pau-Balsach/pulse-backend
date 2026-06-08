@@ -12,6 +12,9 @@ public class ServiceRequest {
     @NotBlank
     private String url;
 
+    private String apiKeyHeader;
+    private String apiKeyValue;
+
     private String method = "GET";
     private Integer expectedStatus = 200;
     private Integer timeoutMs = 5000;

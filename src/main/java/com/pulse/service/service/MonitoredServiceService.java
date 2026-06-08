@@ -24,6 +24,8 @@ public class MonitoredServiceService {
                 .expectedStatus(request.getExpectedStatus())
                 .timeoutMs(request.getTimeoutMs())
                 .checkIntervalSeconds(request.getCheckIntervalSeconds())
+                .apiKeyHeader(request.getApiKeyHeader())
+                .apiKeyValue(request.getApiKeyValue())
                 .build();
 
         return toResponse(repository.save(service));
@@ -44,7 +46,8 @@ public class MonitoredServiceService {
         return new ServiceResponse(
                 s.getId(), s.getProjectId(), s.getName(), s.getUrl(),
                 s.getMethod(), s.getExpectedStatus(), s.getTimeoutMs(),
-                s.getCheckIntervalSeconds(), s.getActive(), s.getCreatedAt()
+                s.getCheckIntervalSeconds(), s.getActive(), s.getCreatedAt(),
+                s.getApiKeyHeader(), s.getApiKeyValue()
         );
     }
 
@@ -58,6 +61,8 @@ public class MonitoredServiceService {
         service.setExpectedStatus(request.getExpectedStatus());
         service.setTimeoutMs(request.getTimeoutMs());
         service.setCheckIntervalSeconds(request.getCheckIntervalSeconds());
+        service.setApiKeyHeader(request.getApiKeyHeader());
+        service.setApiKeyValue(request.getApiKeyValue());
 
         return toResponse(repository.save(service));
     }
