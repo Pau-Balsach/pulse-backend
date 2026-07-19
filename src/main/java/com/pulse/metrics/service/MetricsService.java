@@ -25,12 +25,12 @@ public class MetricsService {
                 .orElseThrow(() -> new RuntimeException("Service not found"));
 
         List<MonitorCheck> checks = checkRepository
-                .findTop500ByServiceIdOrderByCheckedAtDesc(serviceId);
+                .findTop20000ByServiceIdOrderByCheckedAtDesc(serviceId);
 
-        long totalChecks = checkRepository.countByServiceId(serviceId);
+        long totalChecks = checks.size();
 
         long totalDown = checks.stream()
-                .filter(c -> c.getStatus().equals("DOWN"))
+                .filter(c -> "DOWN".equals(c.getStatus()))
                 .count();
 
         double uptimePercentage = totalChecks == 0 ? 100.0 :
