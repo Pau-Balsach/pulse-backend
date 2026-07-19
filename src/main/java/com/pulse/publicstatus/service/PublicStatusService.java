@@ -43,8 +43,8 @@ public class PublicStatusService {
                     service.getName(),
                     service.getUrl(),
                     status,
-                    0.0,
-                    0.0
+                    -1,
+                    -1
             );
 
         }).toList();
